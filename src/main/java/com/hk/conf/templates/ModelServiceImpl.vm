@@ -1,0 +1,25 @@
+package $packagename;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import ${modelpackage}.${model};
+import ${modelpackage}.ModelHolder.${model}Base;
+import ${daopackage}.${model}Dao;
+import ${servicepackage}.${implService};
+
+#set($prefix = $implService.substring(0, 1).toLowerCase())
+#set($suffix = $implService.substring(1))
+@Service("${prefix}${suffix}")
+public class ${classname} extends BaseServiceImpl<${model},${model}Base> implements ${implService} {
+    #set($pModel= $model.substring(0, 1).toLowerCase())
+    #set($sModel= $model.substring(1))
+    
+    private ${model}Dao ${pModel}${sModel}Dao;
+	
+	@Autowired
+	public void set${model}Dao(${model}Dao ${pModel}${sModel}Dao) {
+		super.setBaseDao(${pModel}${sModel}Dao);
+		this.${pModel}${sModel}Dao = ${pModel}${sModel}Dao;
+	}
+}

@@ -1,0 +1,9 @@
+package $packagename;
+
+import ${modelPackage}.ModelHolder.${model}Base;
+import ${modelPackage}.${model};
+
+public interface ${classname} extends BaseDao<${model} , ${model}Base>{
+
+
+}

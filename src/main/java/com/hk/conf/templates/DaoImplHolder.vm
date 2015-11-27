@@ -1,0 +1,103 @@
+package $packagename;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+#foreach($table in $tables)
+import ${modelPackage}.${table.name};
+import ${modelPackage}.ModelHolder.${table.name}Base;
+#end
+
+public class ${classname} {
+	
+	private ${classname}() { 
+	
+	}
+	
+#foreach($table in $tables)
+	public static class Base${table.name}DaoImpl extends BaseDaoImpl<${table.name},${table.name}Base> {
+		
+		@Override
+		public String getTableName() {
+			return Mapping.TABLE_NAME;
+		}
+
+		@Override
+		public List<String> getColumns() {
+			return Mapping.Columns.columns;
+		}
+		
+		@Override
+		public Map<String, ?> createParameterMap(${table.name}Base t) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			#foreach($column in $table.columns)
+			#set($get = "get")
+			#if($column.type.equals("Boolean"))
+			#set($get = "is")
+			#end
+			#set($prefix = $column.name.substring(0, 1).toUpperCase())
+			#set($suffix = $column.name.substring(1))
+			map.put("$column.name", t.$get$prefix$suffix());
+			#end
+			return map;
+		}
+		
+		@Override
+		public ${table.name} readFromResultSet(ResultSet rs) throws SQLException {
+			${table.name} obj = new ${table.name}();
+			fill${table.name}FromResultSet(obj, rs);
+			return obj;
+		}
+		
+		public static void fill${table.name}FromResultSet(${table.name} obj, ResultSet rs) throws SQLException {
+#foreach($column in $table.columns)
+#set($prefix = $column.name.substring(0, 1).toUpperCase())
+#set($suffix = $column.name.substring(1))
+#if($column.type.equals("Integer"))
+#set($getResult = "getInt")
+#elseif($column.type.equals("Float"))
+#set($getResult = "getFloat")
+#elseif($column.type.equals("Double"))
+#set($getResult = "getDouble")
+#elseif($column.type.equals("BigDecimal"))
+#set($getResult = "getBigDecimal")
+#elseif($column.type.equals("Boolean"))
+#set($getResult = "getBoolean")
+#elseif($column.type.equals("Date") || $column.type.equals("java.util.Date"))
+#set($getResult = "getTimestamp")
+#elseif($column.type.equals("Long") || $column.type.equals("BigInteger"))
+#set($getResult = "getLong")
+#else
+#set($getResult = "getString")
+#end
+			obj.set$prefix$suffix(rs.$getResult(Mapping.Columns.$column.name));
+#end
+		}
+		public static class Mapping {
+			public static final String TABLE_NAME = "${table.originName}";
+			
+			public static class Columns {
+				
+				#foreach($column in $table.columns)
+				public static final String ${column.name} = "${column.name}";
+				#end
+				public static List<String> columns;
+					
+				static {
+					columns = new ArrayList<String>();
+					#foreach($column in $table.columns)
+					columns.add(${column.name});
+					#end
+				}
+			}
+			
+		}
+	
+	}
+	
+#end
+}

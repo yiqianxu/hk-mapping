@@ -1,0 +1,38 @@
+package $packagename;
+
+#foreach($imp in $imports)
+import $imp;
+#end
+
+public final class ModelHolder {
+	
+	private ModelHolder(){
+	
+	}
+	
+#foreach($table in $tables)
+	public static class ${table.name}Base extends ModelBase {
+		
+#foreach($column in $table.columns)
+#if(!$ignoreColumns.contains($table.colMap.get($column.name)))
+		/** $column.remark */
+		private $column.type $column.name;
+		
+#end
+#end
+#foreach($column in $table.columns)
+#if(!$ignoreColumns.contains($table.colMap.get($column.name)))
+		public $column.type $util.get($column.type, $column.name)() {
+			return $column.name;
+		}
+
+		public void $util.set($column.name)($column.type $column.name) {
+			this.$column.name = $column.name;
+		}
+		
+#end
+#end
+	}
+	
+#end
+}

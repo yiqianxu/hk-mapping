@@ -1,0 +1,13 @@
+package $packagename;
+
+import org.springframework.stereotype.Repository;
+
+import ${daoPackage}.${implDao};
+import ${packagename}.DaoImplHolder.Base${classname};
+
+#set($prefix = $implDao.substring(0, 1).toLowerCase())
+#set($suffix = $implDao.substring(1))
+@Repository("${prefix}${suffix}")
+public class ${classname} extends Base${classname}  implements ${implDao}{
+
+}
